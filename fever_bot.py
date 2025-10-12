@@ -7,7 +7,7 @@ BOT_TOKEN = "8406747669:AAGczfXwFiHS8jiEEkCTDEfsD2HL1kIKxZI"
 CHAT_ID = "1243736325"
 
 # Initial contest IDs you already know
-seen_contests = {37, 43, 44, 45}
+seen_contests = {}
 
 def format_datetime(dt_str):
     dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
