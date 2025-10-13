@@ -1,0 +1,6 @@
+v: 0
+micros:
+  - name: fever-bot
+    src: .
+    engine: python3.11
+    run: python fever_bot.py
