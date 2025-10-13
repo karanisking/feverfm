@@ -36,6 +36,8 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
+          # Directly embed PAT (unsafe!)
+          git remote set-url origin https://x-access-token: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@github.com/karanisking/feverfm.git
           git add sent_contests.json fever_bot.log
           git commit -m "Update sent contests and log" || echo "No changes to commit"
           git push
