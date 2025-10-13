@@ -5,18 +5,31 @@ from datetime import datetime, timedelta
 API_URL = "https://api.playwithfever.com/v1/contest/list/happening-quiz"
 BOT_TOKEN = "8406747669:AAGczfXwFiHS8jiEEkCTDEfsD2HL1kIKxZI"
 CHAT_ID = "1243736325"
+SENT_FILE = "sent_contests.json"
+LOG_FILE = "fever_bot.log"
 
-# Track contest IDs you've already sent
-seen_contests = set()
+# Load previously sent contests
+if os.path.exists(SENT_FILE):
+    with open(SENT_FILE, "r") as f:
+        seen_contests = set(json.load(f))
+else:
+    seen_contests = set()
+
+def save_sent_contests():
+    with open(SENT_FILE, "w") as f:
+        json.dump(list(seen_contests), f)
+
+def log_message(message):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, "a") as f:
+        f.write(f"[{timestamp}] {message}\n")
+    print(f"[{timestamp}] {message}")  # Also print to GitHub Actions log
 
 def format_datetime(dt_str):
-    """Convert UTC datetime string to IST and format nicely."""
     dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
-    ist_time = dt + timedelta(hours=5, minutes=30)
-    return ist_time.strftime("%d %B %Y, %I:%M %p")  # Example: 09 October 2025, 02:55 PM
+    return dt.strftime("%d %B %Y, %I:%M %p")  # e.g., 10 October 2025, 02:55 PM
 
 def send_telegram_message(text, photo_url=None):
-    """Send a message or photo to Telegram."""
     try:
         if photo_url:
             url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
@@ -26,15 +39,18 @@ def send_telegram_message(text, photo_url=None):
             url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
             data = {"chat_id": CHAT_ID, "text": text}
             requests.post(url, data=data)
+        log_message(f"Sent message for contest: {text.splitlines()[1]}")  # ID line
     except Exception as e:
-        print("Telegram send error:", e)
+        log_message(f"Telegram send error: {e}")
 
 def check_new_contests():
-    """Check for new contests and send alerts for new ones."""
     global seen_contests
     try:
         response = requests.get(API_URL).json()
         active_games = response['data']['active_games']
+
+        if not active_games:
+            log_message("No active contests found.")
 
         for game in active_games:
             contest_id = int(game['contest_id'])
@@ -52,15 +68,15 @@ def check_new_contests():
                     f"End: {end}"
                 )
 
-                # Use thumbnail instead of full image
-                send_telegram_message(message, photo_url=game.get('contest_thumb'))
+                send_telegram_message(message, photo_url=game['contest_thumb'])
+
+        save_sent_contests()
+        log_message("Check completed successfully.")
 
     except Exception as e:
-        print("Error:", e)
+        log_message(f"Error fetching contests: {e}")
 
-# Check every 5 minutes
 if __name__ == "__main__":
-    print("🤖 Fever Bot started! Checking for new contests every 5 minutes...")
-    while True:
-        check_new_contests()
-        time.sleep(300)
+    log_message("Fever Bot run started.")
+    check_new_contests()
+    log_message("Fever Bot run finished.\n")
