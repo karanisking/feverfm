@@ -10,14 +10,11 @@ CHAT_ID = "1243736325"
 SENT_FILE = "sent_contests.json"
 LOG_FILE = "fever_bot.log"
 
-# Load previously sent contests
-if os.path.exists(SENT_FILE):
-    with open(SENT_FILE, "r") as f:
-        seen_contests = set(json.load(f))
-else:
-    seen_contests = set()
+# Manually maintained contest IDs that should never be sent again
+seen_contests = {37, 43, 44, 45}  # add more IDs as needed
 
 def save_sent_contests():
+    # Save only new contests (for local tracking)
     with open(SENT_FILE, "w") as f:
         json.dump(list(seen_contests), f)
 

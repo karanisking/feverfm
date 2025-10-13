@@ -30,14 +30,3 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python fever_bot.py
-
-      # 5️⃣ Commit sent contests and log file back to repo
-      - name: Commit Updates
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          # Directly embed PAT (unsafe!)
-        git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
-          git add sent_contests.json fever_bot.log
-          git commit -m "Update sent contests and log" || echo "No changes to commit"
-          git push
