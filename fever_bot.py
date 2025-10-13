@@ -1,6 +1,7 @@
 import requests
 import time
 from datetime import datetime, timedelta
+import os
 
 API_URL = "https://api.playwithfever.com/v1/contest/list/happening-quiz"
 BOT_TOKEN = "8406747669:AAGczfXwFiHS8jiEEkCTDEfsD2HL1kIKxZI"
