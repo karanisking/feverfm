@@ -9,7 +9,7 @@ SENT_FILE = "sent_contests.json"
 LOG_FILE = "fever_bot.log"
 
 # Manually maintained contest IDs that should never be sent again
-seen_contests = {37, 43, 44, 45,46,47,48,49,50,51,52,54}  # add more IDs as needed
+seen_contests = {37, 43, 44, 45,46,47,48,49,50,51,52,54,56}  # add more IDs as needed
 
 def save_sent_contests():
     with open(SENT_FILE, "w") as f:
