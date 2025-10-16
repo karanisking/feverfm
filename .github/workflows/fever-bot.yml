@@ -2,7 +2,7 @@ name: Fever Bot
 
 on:
   schedule:
-    - cron: "*/2 * * * *"  # every 5 minutes
+    - cron: "*/1 * * * *"  # every 5 minutes
   workflow_dispatch:  # allows manual trigger
 
 jobs:
