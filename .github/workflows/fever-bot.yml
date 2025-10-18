@@ -1,32 +1,36 @@
 name: Fever Bot
 
 on:
+  workflow_dispatch:  # allows manual start
   schedule:
-    - cron: "*/1 * * * *"  # every 5 minutes
-  workflow_dispatch:  # allows manual trigger
+    - cron: "0 * * * *"  # optional: starts every hour, but the loop runs forever anyway
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    timeout-minutes: 360  # optional: keep it running for 6 hours (max allowed)
 
     steps:
-      # 1️⃣ Checkout repository
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
-      # 3️⃣ Install dependencies
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      # 4️⃣ Run Fever Bot
-      - name: Run Fever Bot
+      - name: Run Fever Bot Continuously
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: python fever_bot.py
+        run: |
+          echo "Starting continuous Fever Bot..."
+          while true; do
+            echo "Running fever_bot.py at $(date)"
+            python fever_bot.py
+            echo "Sleeping for 30 seconds..."
+            sleep 30
+          done
